@@ -7,10 +7,12 @@ const app = express();
 // Connect Database
 connectDB();
 
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // Define Routes
 app.use("/test", require("./api/test"));
+app.use("/user", require("./api/user"));
 
 // error handler
 app.use(function (err, req, res, next) {

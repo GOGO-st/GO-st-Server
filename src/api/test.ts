@@ -1,13 +1,14 @@
 import createError from "http-errors";
 import express, { Request, Response } from "express";
 const router = express.Router();
-const statusCode = require("../modules/statusCode");
-const responseMessage = require("../modules/responseMessage");
+const sc = require("../modules/statusCode");
+const rm = require("../modules/responseMessage");
+const { success, fail } = require("../modules/util");
 import config from "../config";
 
 router.get("/", async (req: Request, res: Response) => {
   const message = "Testing message";
-  res.send(message);
+  res.status(sc.OK).send(success(sc.OK, rm.OK, message));
 });
 
 module.exports = router;

@@ -23,12 +23,12 @@ module.exports = {
   /**
    * @signup
    */
-  SIGN_UP_SUCCESS: "회원 가입 및 기본카테고리 생성 성공.",
-  SIGN_UP_FAIL: "회원 가입 실패.",
-  SIGN_IN_SUCCESS: "로그인 성공.",
-  SIGN_IN_FAIL: "로그인 실패.",
-  ALREADY_EMAIL: "이미 존재하는 이메일 입니다.",
-  NOT_VALID_EMAIL: "올바르지 않은 이메일 형식 입니다.",
+  SIGN_UP_SUCCESS: "회원 가입 성공",
+  SIGN_UP_FAIL: "회원 가입 실패",
+  SIGN_IN_SUCCESS: "로그인 성공",
+  SIGN_IN_FAIL: "로그인 실패",
+  ALREADY_EMAIL: "이미 인증 처리된 이메일",
+  NOT_VALID_EMAIL: "올바르지 않은 이메일 형식",
   MAIL_SEND_SUCCESS: "이메일 인증번호 전송 성공",
 
   /**
