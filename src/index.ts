@@ -3,7 +3,6 @@ import config from "./config";
 import connectDB from "./loader/db";
 import { logger } from "./modules/logger";
 const app = express();
-
 // Connect Database
 connectDB();
 
@@ -11,8 +10,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // Define Routes
-app.use("/test", require("./api/test"));
-app.use("/user", require("./api/user"));
+app.use("/users", require("./api/user"));
+app.use("/reviews", require("./api/review"));
+app.use("/locations", require("./api/location"));
 
 // error handler
 app.use(function (err, req, res, next) {

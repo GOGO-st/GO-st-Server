@@ -9,11 +9,6 @@ const rm = require("../modules/responseMessage");
 const { success, fail } = require("../modules/util");
 const userService = require("../services/userService");
 
-router.get("/", async (req: Request, res: Response) => {
-  const message = "Testing message";
-  res.status(sc.OK).send(success(sc.OK, rm.OK, message));
-});
-
 /**
  *  @route Post user/login
  *  @desc Authenticate user & get token(로그인)
@@ -28,21 +23,26 @@ router.get("/", async (req: Request, res: Response) => {
  */
 router.post(
   "/signup",
-  [check("email", "email is required").not().isEmpty()],
+  [
+    check("email", "email is required").not().isEmpty(),
+    check("email", "Please include a valid email").isEmail(),
+  ],
   async (req: Request, res: Response, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return next(createError(sc.BAD_REQUEST, rm.NULL_VALUE));
     }
-
-    const { email } = req.body;
-
+    const email = req.body.email;
     try {
       const user = await userService.signupUser(email);
+      const userToken = await userService.generateToken(user._id);
 
-      return res
-        .status(sc.CREATED)
-        .send(success(sc.CREATED, rm.SIGN_UP_SUCCESS, user));
+      return res.status(sc.CREATED).send(
+        success(sc.CREATED, rm.SIGN_UP_SUCCESS, {
+          user: user,
+          token: userToken,
+        })
+      );
     } catch (error) {
       return next(error);
     }
@@ -51,15 +51,14 @@ router.post(
 
 /**
  *  @route Post user/auth
- *  @desc 입력받은 이메일로 인증번호 전송 및 클라이언트에게 return
+ *  @desc 이메일 인증 번호 전송 및 클라이언트 인증 번호 리턴
  *  @access Public
  */
 router.post(
   "/auth",
   [
-    // check("email", "email is required").not().isEmpty(),
-    //check("email", "Please include a valid email").isEmail(),
-    check("email").exists(),
+    check("email", "email is required").not().isEmpty(),
+    check("email", "Please include a valid email").isEmail(),
   ],
   async (req: Request, res: Response, next) => {
     const errors = validationResult(req);
@@ -71,7 +70,6 @@ router.post(
 
     try {
       const authNum = await userService.mailToUser(email);
-      console.log(authNum);
       return res
         .status(sc.OK)
         .send(success(sc.OK, rm.MAIL_SEND_SUCCESS, authNum));

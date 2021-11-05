@@ -5,6 +5,9 @@ const createError = require("http-errors");
 const sc = require("../modules/statusCode");
 const rm = require("../modules/responseMessage");
 const date = require("../modules/date");
+const getSchool = require("../modules/getSchool");
+const generateNickname = require("../modules/nicknameGenerate");
+const nickNameSet = require("../modules/nicknameSet");
 const nodemailer = require("nodemailer");
 
 /**
@@ -21,7 +24,7 @@ const generateToken = async userId => {
     expiresIn: 864000,
   });
 
-  // console.log(token)
+  console.log(token);
   return token;
 };
 
@@ -30,21 +33,18 @@ const generateToken = async userId => {
  */
 const signupUser = async email => {
   const isUsedEmail = await User.findOne({ email });
-  var emailReg =
-    /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i;
-
   if (isUsedEmail != null) {
     throw createError(sc.BAD_REQUEST, rm.ALREADY_EMAIL);
-  } else if (!emailReg.test(email)) {
-    throw createError(sc.BAD_REQUEST, rm.NOT_VALID_EMAIL);
   }
 
-  const nickname = "빨간 고양이";
+  const nickname = generateNickname(nickNameSet);
+  const school = getSchool(email);
 
   let created_at = date.getDate();
   const user = new User({
     email,
     nickname,
+    school,
     created_at,
   });
 

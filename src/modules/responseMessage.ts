@@ -27,7 +27,7 @@ module.exports = {
   SIGN_UP_FAIL: "회원 가입 실패",
   SIGN_IN_SUCCESS: "로그인 성공",
   SIGN_IN_FAIL: "로그인 실패",
-  ALREADY_EMAIL: "이미 인증 처리된 이메일",
+  ALREADY_EMAIL: "이미 가입된 이메일",
   NOT_VALID_EMAIL: "올바르지 않은 이메일 형식",
   MAIL_SEND_SUCCESS: "이메일 인증번호 전송 성공",
 
@@ -66,6 +66,7 @@ module.exports = {
   LOCATE_CATEGORY_SUCCESS: "카테고리 위치 목록 조회 성공",
   LOCATE_CATEGORY_FAIL: "카테고리 위치 목록 조회 성공",
   LOCATE_DETAIL_SUCCESS: "위치 상세 정보 조회 성공",
+  LOCATE_DETAIL_FAIL: "위치 상세 정보 조회 실패",
   LOCATE_REQUEST_FAIL: "위치 요청에 필요한 값이 잘못되었습니다.",
 
   /**

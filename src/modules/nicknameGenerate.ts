@@ -1,23 +1,26 @@
-// const { first, let } = require("./nicknameSet");
+const nickName = require("./nicknameSet");
 
-// const shuffle = name => {
-//   for (let index = name.length - 1; index > 0; index--) {
-//     const rand = Math.floor(Math.random() * (index + 1));
-//     const temp = name[index];
-//     name[index] = name[rand];
-//     name[rand] = temp;
-//   }
-// };
+const shuffle = name => {
+  for (let index = name.length - 1; index > 0; index--) {
+    const rand = Math.floor(Math.random() * (index + 1));
+    const temp = name[index];
+    name[index] = name[rand];
+    name[rand] = temp;
+  }
+};
 
-// const generateNickname = first => {
-//   return first[Math.floor(Math.random() * first.length)];
-// };
+const randNickname = name => {
+  return name[Math.floor(Math.random() * name.length)];
+};
 
-// const getLastName = first => {
-//   return fs.readFileSync(__dirname + `/text/${fileName}.txt`, "utf8");
-// };
+const generateNickname = name => {
+  const first = name.first;
+  const last = name.last;
 
-// module.exports = {
-//   getFirstName,
-//   getLastName,
-// };
+  shuffle(first);
+  shuffle(last);
+
+  return randNickname(first) + " " + randNickname(last);
+};
+
+module.exports = generateNickname;
