@@ -54,8 +54,14 @@ const getLocationDetailById = async locationId => {
   return detail;
 };
 
+const saveCoord = async location => {
+  await location.save();
+  return;
+};
+
 module.exports = {
   getAllLocationList,
   getLocationListByCategory,
   getLocationDetailById,
+  saveCoord,
 };

@@ -1,4 +1,4 @@
-// import auth from "../middleware/auth";
+import auth from "../middleware/auth";
 import createError from "http-errors";
 import express, { Request, Response } from "express";
 import mongoose from "mongoose";
@@ -9,7 +9,7 @@ const sc = require("../modules/statusCode");
 const rm = require("../modules/responseMessage");
 const locationService = require("../services/locationService");
 const reviewService = require("../services/reviewService");
-const { auth } = require("../middleware/auth");
+
 const { success, fail } = require("../modules/util");
 
 /**
@@ -73,7 +73,7 @@ router.post("/:locationId", auth, async (req: Request, res: Response, next) => {
   if (!req.body || !req.body.review)
     return next(createError(401, rm.NULL_VALUE));
   const reviewParams = JSON.parse(req.body.review);
-  const locationId = req.query.cafe;
+  const locationId = req.query.location;
   const userId = res.locals.userId;
   const { title, content, emoji, category } = reviewParams;
 

@@ -13,6 +13,7 @@ app.use(express.json());
 app.use("/users", require("./api/user"));
 app.use("/reviews", require("./api/review"));
 app.use("/locations", require("./api/location"));
+app.use("/geo", require("./api/geo"));
 
 // error handler
 app.use(function (err, req, res, next) {

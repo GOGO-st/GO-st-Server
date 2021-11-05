@@ -29,4 +29,6 @@ export default {
   awsS3AccessKey: process.env.S3_ACCESS_KEY,
   awsS3SecretKey: process.env.S3_SECRET_KEY,
   awsS3Bucket: process.env.S3_BUCKET,
+  mapClientId: process.env.MAP_CLIENT_ID,
+  mapSecretKey: process.env.MAP_SECRET_KEY,
 };

@@ -13,7 +13,7 @@ const { success, fail } = require("../modules/util");
  *  @desc 모든 장소를 리턴
  *  @access Public
  */
-router.get("/", async (req: Request, res: Response) => {
+router.get("/", async (req: Request, res: Response, next) => {
   try {
     const locationList = await locationService.getAllLocationList();
     if (!locationList)
@@ -23,7 +23,7 @@ router.get("/", async (req: Request, res: Response) => {
       .status(sc.OK)
       .send(success(sc.OK, rm.LOCATE_SUCCESS, locationList));
   } catch (error) {
-    console.log(error.message);
+    return next(error);
   }
 });
 
