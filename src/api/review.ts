@@ -7,7 +7,7 @@ import { check, validationResult } from "express-validator";
 const router = express.Router();
 const sc = require("../modules/statusCode");
 const rm = require("../modules/responseMessage");
-const locationService = require("../services/locationService");
+const mapService = require("../services/mapService");
 const reviewService = require("../services/reviewService");
 
 const { success, fail } = require("../modules/util");
@@ -19,15 +19,16 @@ const { success, fail } = require("../modules/util");
  */
 router.get("/", auth, async (req: Request, res: Response, next) => {
   const userId = res.locals.userId;
-
   try {
     const reviews = await reviewService.getMyReviews(userId);
-    if (reviews.length == 0) {
-      res
+    console.log(reviews);
+    if (reviews == null) {
+      return res
         .status(sc.NO_CONTENT)
         .send(fail(sc.NO_CONTENT, rm.READ_MY_REVIEW_FAIL));
       next();
     }
+
     return res
       .status(sc.OK)
       .send(success(sc.OK, rm.READ_MY_REVIEW_SUCCESS, reviews));
@@ -70,15 +71,15 @@ router.get("/:locationId", auth, async (req: Request, res: Response, next) => {
 router.post("/", auth, async (req: Request, res: Response, next) => {
   if (!req.body) return next(createError(401, rm.NULL_VALUE));
   const userId = res.locals.userId;
-  const { title, content, emoji, category } = req.body;
-  var locationId = 0;
+  const { name, address, title, content, emoji, category } = req.body;
 
-  if (!content || !title || !emoji)
+  if (!name || !address || !content || !title || !emoji)
     next(createError(createError(sc.BAD_REQUEST, rm.NULL_VALUE)));
 
   try {
     const review = await reviewService.createReview(
-      locationId,
+      name,
+      address,
       userId,
       title,
       content,

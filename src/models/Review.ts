@@ -9,7 +9,8 @@ const ReviewSchema = new mongoose.Schema(
       required: true,
     },
     locationId: {
-      type: Number,
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: "Locaion",
       required: true,
     },
     title: {

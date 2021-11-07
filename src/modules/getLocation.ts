@@ -1,3 +1,5 @@
+const gs = require("../services/geoService");
+
 const getLocation = data => {
   let region = "";
   let land = "";
@@ -19,8 +21,9 @@ const getSearchedLocationTitle = data => {
   let titleList = [];
 
   for (let i = 0; i < data.length; i++) {
-    let t = data[i]["title"].replace(/<b>/gi, "").replace(/<\/b>/gi, "");
-    titleList.push(t);
+    let title = data[i]["title"].replace(/<b>/gi, "").replace(/<\/b>/gi, "");
+    let address = data[i]["roadAddress"];
+    titleList.push({ name: title, address: address });
   }
 
   return titleList;

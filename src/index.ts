@@ -12,7 +12,7 @@ app.use(express.json());
 // Define Routes
 app.use("/users", require("./api/user"));
 app.use("/reviews", require("./api/review"));
-app.use("/locations", require("./api/location"));
+app.use("/maps", require("./api/map"));
 app.use("/geo", require("./api/geo"));
 
 // error handler

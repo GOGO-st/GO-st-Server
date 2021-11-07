@@ -5,17 +5,17 @@ import mongoose from "mongoose";
 const router = express.Router();
 const sc = require("../modules/statusCode");
 const rm = require("../modules/responseMessage");
-const locationService = require("../services/locationService");
+const mapService = require("../services/mapService");
 const { success, fail } = require("../modules/util");
 
 /**
- *  @route GET locations/
+ *  @route GET maps/
  *  @desc 모든 장소를 리턴
  *  @access Public
  */
 router.get("/", async (req: Request, res: Response, next) => {
   try {
-    const locationList = await locationService.getAllLocationList();
+    const locationList = await mapService.getAllLocationList();
     if (!locationList)
       return res.status(sc.NO_CONTENT).send(fail(sc.NO_CONTENT, rm.NO_CONTENT));
 
@@ -28,7 +28,7 @@ router.get("/", async (req: Request, res: Response, next) => {
 });
 
 /**
- *  @route GET locations/:category
+ *  @route GET maps/:category
  *  @desc 카테고리 필터링 장소 리턴
  *  @access Public
  */
@@ -40,9 +40,7 @@ router.get("/:category", async (req: Request, res: Response, next) => {
   }
 
   try {
-    const locationList = await locationService.getLocationListByCategory(
-      category
-    );
+    const locationList = await mapService.getLocationListByCategory(category);
 
     if (!locationList)
       return res
@@ -58,7 +56,7 @@ router.get("/:category", async (req: Request, res: Response, next) => {
 });
 
 /**
- *  @route GET locations/detail/:locationId
+ *  @route GET maps/detail/:locationId
  *  @desc 특정 장소 상세 정보 리턴
  *  @access Public
  */
@@ -69,9 +67,7 @@ router.get("/detail/:locationId", async (req: Request, res: Response, next) => {
     if (!mongoose.isValidObjectId(locationId)) {
       return next(createError(sc.BAD_REQUEST, rm.INVALID_IDENTIFIER));
     } else {
-      const locationDetail = await locationService.getLocationDetailById(
-        locationId
-      );
+      const locationDetail = await mapService.getLocationDetailById(locationId);
       if (!locationDetail)
         return res
           .status(sc.NO_CONTENT)

@@ -8,7 +8,8 @@ import {
 import { ILocationForReviewDTO } from "../interfaces/ILocation";
 import createError from "http-errors";
 
-const locationService = require("../services/locationService");
+const mapService = require("../services/mapService");
+const geoService = require("../services/geoService");
 const rm = require("../modules/responseMessage");
 const date = require("../modules/date");
 
@@ -41,14 +42,25 @@ const getLocationReviewList = async locationId => {
   return reviewDTOList;
 };
 
-const createReview = async (userId, title, content, emoji, category) => {
+const createReview = async (
+  userId,
+  name,
+  address,
+  title,
+  content,
+  emoji,
+  category
+) => {
   try {
-    const allLocation = await Location.find({});
-    console.log(allLocation);
-
+    const coord = await geoService.requestGeocoding(address);
     const review = new Review({
       user: userId,
-      location: 0,
+      location: {
+        name: name,
+        address: address,
+        x: coord.x,
+        y: coord.y,
+      },
       title: title,
       content: content,
       emoji: emoji,

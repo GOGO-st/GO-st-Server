@@ -26,7 +26,6 @@ const generateToken = async userId => {
     expiresIn: 864000,
   });
 
-  console.log(token);
   return token;
 };
 
