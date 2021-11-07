@@ -14,7 +14,32 @@ const userService = require("../services/userService");
  *  @desc Authenticate user & get token(로그인)
  *  @access Public
  */
-//TODO. 로그인 작성하기
+router.post(
+  "/login",
+  [
+    check("email", "Please include a valid email").not().isEmpty(),
+    check("password", "password is required").not().isEmpty(),
+  ],
+  async (req: Request, res: Response, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return next(createError(sc.BAD_REQUEST, rm.NULL_VALUE));
+    }
+
+    const { email, password } = req.body;
+
+    try {
+      const user = await userService.loginUser(email, password);
+      const userToken = await userService.generateToken(user._id);
+      const nickName = user.nickname;
+      return res
+        .status(sc.OK)
+        .send(success(sc.OK, rm.SIGN_IN_SUCCESS, { nickName, userToken }));
+    } catch (error) {
+      return next(error);
+    }
+  }
+);
 
 /**
  *  @route Post user/signup

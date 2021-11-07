@@ -8,9 +8,9 @@ const ReviewSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    locationId: {
+    location: {
       type: mongoose.SchemaTypes.ObjectId,
-      ref: "Locaion",
+      ref: "Location",
       required: true,
     },
     title: {

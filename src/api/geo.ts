@@ -15,7 +15,7 @@ const { success, fail } = require("../modules/util");
  * @desc 주소를 좌표로 변환합니다.
  * @access Public
  */
-router.get("/", async (req: Request, res: Response, next) => {
+router.get("/address", async (req: Request, res: Response, next) => {
   const location = req.query.location;
   try {
     if (!location)

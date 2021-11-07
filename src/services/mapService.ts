@@ -1,13 +1,16 @@
 import Location from "../models/Location";
+import Review from "../models/Review";
+import User from "../models/User";
 import createError from "http-errors";
 import { ILocationGeoDTO, ILocationSearchDTO } from "../interfaces/ILocation";
 import mongoose from "mongoose";
+import { IReviewOutputDTO } from "../interfaces/IReview";
 const rm = require("../modules/responseMessage");
 const sc = require("../modules/statusCode");
 
 const getAllLocationList = async () => {
   var locations = await Location.find().select(
-    "_id locationId latitude longitude"
+    "_id locationName locationAddress x y emoji"
   );
 
   let LocationGeoList: ILocationGeoDTO[] = [];
@@ -15,9 +18,11 @@ const getAllLocationList = async () => {
   for (let location of locations) {
     let point: ILocationGeoDTO = {
       _id: location._id,
-      locationId: location.locationId,
-      latitude: location.latitude,
-      longitude: location.longitude,
+      locationName: location.locationName,
+      locationAddress: location.locationAddress,
+      x: location.x,
+      y: location.y,
+      emoji: location.emoji,
     };
     LocationGeoList.push(point);
   }
@@ -28,18 +33,18 @@ const getAllLocationList = async () => {
 };
 
 const getLocationListByCategory = async category => {
-  var locations = await Location.find({ category: category }).select(
-    "_id locationId latitude longitude"
-  );
+  var locations = await Location.find({ category: category });
 
   let LocationGeoList: ILocationGeoDTO[] = [];
 
   for (let location of locations) {
     let point: ILocationGeoDTO = {
       _id: location._id,
-      locationId: location.locationId,
-      latitude: location.latitude,
-      longitude: location.longitude,
+      locationName: location.locationName,
+      locationAddress: location.locationAddress,
+      x: location.x,
+      y: location.y,
+      emoji: location.emoji,
     };
     LocationGeoList.push(point);
   }
@@ -51,19 +56,68 @@ const getLocationListByCategory = async category => {
 
 const getLocationDetailById = async locationId => {
   const detail = await Location.findById(locationId);
+  const reviews = await Review.find()
+    .where("location")
+    .equals(locationId)
+    .sort({ created_at: -1 });
 
+  let reviewList: IReviewOutputDTO[] = [];
+
+  for (let review of reviews) {
+    let user = await User.findById(review.user);
+    let point: IReviewOutputDTO = {
+      _id: review._id,
+      nickname: user.nickname,
+      title: review.title,
+      content: review.content,
+      emoji: review.emoji,
+      created_at: review.created_at,
+    };
+    reviewList.push(point);
+  }
+
+  if (reviewList.length == 0) {
+    return null;
+  }
   if (!detail) {
     return null;
   }
-  return detail;
+  return { detail, reviewList };
 };
 
-const saveCoord = async location => {
-  await location.save();
-  return;
+const saveCoord = async (
+  x,
+  y,
+  locationName,
+  locationAddress,
+  category,
+  emoji
+) => {
+  try {
+    const location = new Location({
+      x: x,
+      y: y,
+      locationName: locationName,
+      locationAddress: locationAddress,
+      category: category,
+      emoji: emoji,
+    });
+
+    await location.save();
+
+    return location;
+  } catch (error) {
+    console.log(error.message);
+    throw createError(rm.INTERNAL_SERVER_ERROR);
+  }
+};
+
+const updateLocationEmoji = async (emoji, locationId) => {
+  await Location.findOneAndUpdate({ _id: locationId }, { emoji: emoji });
 };
 
 module.exports = {
+  updateLocationEmoji,
   getAllLocationList,
   getLocationListByCategory,
   getLocationDetailById,

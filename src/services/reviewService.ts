@@ -17,20 +17,21 @@ const getLocationReviewList = async locationId => {
   const reviews = await Review.find()
     .where("location")
     .equals(locationId)
-    .populate("user", ["_id", "nickname"])
+    .populate("user", [
+      "_id",
+      "nickname",
+      "created_at",
+      "title",
+      "content",
+      "emoji",
+    ])
     .sort({ created_at: -1 });
   let reviewDTOList: IReviewOutputDTO[] = [];
 
   for (let review of reviews) {
-    let writerDTO: IWriterDTO = {
-      _id: review.user._id,
-      nickname: review.user.nickname,
-    };
     let reviewDTO: IReviewOutputDTO = {
       _id: review._id,
-      locationName: "review.locationId",
-      locationId: 0,
-      nickname: writerDTO,
+      nickname: review.user.nickname,
       title: review.title,
       content: review.content,
       emoji: review.emoji,
@@ -42,25 +43,11 @@ const getLocationReviewList = async locationId => {
   return reviewDTOList;
 };
 
-const createReview = async (
-  userId,
-  name,
-  address,
-  title,
-  content,
-  emoji,
-  category
-) => {
+const review = async (userId, locationId, title, content, emoji, category) => {
   try {
-    const coord = await geoService.requestGeocoding(address);
     const review = new Review({
       user: userId,
-      location: {
-        name: name,
-        address: address,
-        x: coord.x,
-        y: coord.y,
-      },
+      location: locationId,
       title: title,
       content: content,
       emoji: emoji,
@@ -69,7 +56,6 @@ const createReview = async (
     });
 
     await review.save();
-
     return review;
   } catch (error) {
     console.log(error.message);
@@ -77,10 +63,58 @@ const createReview = async (
   }
 };
 
-const getMyReviews = async userId => {
-  const myReviews = await Review.find({ user: userId })
-    .populate("location")
-    .sort({ created_at: -1 });
+const createReview = async (
+  userId,
+  x,
+  y,
+  locationName,
+  locationAddress,
+  title,
+  content,
+  emoji,
+  category
+) => {
+  try {
+    const isReviewed = await checkReviewed(x, y);
+
+    if (isReviewed == false) {
+      const location = await mapService.saveCoord(
+        x,
+        y,
+        locationName,
+        locationAddress,
+        category,
+        emoji
+      );
+      return await review(
+        userId,
+        location._id,
+        title,
+        content,
+        emoji,
+        category
+      );
+    } else {
+      const location = await Location.findOne({ x: x, y: y });
+      return await review(
+        userId,
+        location._id,
+        title,
+        content,
+        emoji,
+        category
+      );
+    }
+  } catch (error) {
+    console.log(error.message);
+    throw createError(rm.INTERNAL_SERVER_ERROR);
+  }
+};
+
+const getReviews = async userId => {
+  const myReviews = await Review.find({ user: userId }).sort({
+    created_at: -1,
+  });
 
   if (myReviews.length == 0) return null;
 
@@ -89,8 +123,7 @@ const getMyReviews = async userId => {
   for (let review of myReviews) {
     let myReview: IReviewMyOutputDTO = {
       _id: review._id,
-      locationName: "location.name",
-      locationId: 0,
+      locationName: review.locationName,
       title: review.title,
       content: review.content,
       emoji: review.emoji,
@@ -102,8 +135,15 @@ const getMyReviews = async userId => {
   return myReviewsDTO;
 };
 
+const checkReviewed = async (x, y) => {
+  const review = await Location.findOne({ x: x, y: y });
+  if (!review) return false;
+  return true;
+};
+
 module.exports = {
+  checkReviewed,
   getLocationReviewList,
   createReview,
-  getMyReviews,
+  getReviews,
 };

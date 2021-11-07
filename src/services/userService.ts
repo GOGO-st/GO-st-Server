@@ -13,10 +13,24 @@ const nickNameSet = require("../modules/nicknameSet");
 const nodemailer = require("nodemailer");
 
 /**
- * @자동_로그인
+ * @로그인
  */
-const loginUser = async (email, password) => {};
-// TODO . 최초 인증 시 자동 로그인 API 작성
+const loginUser = async (email, password) => {
+  let user = await User.findOne({ email });
+
+  // 없는 유저
+  if (!user) {
+    throw createError(sc.NOT_FOUND, rm.NO_EMAIL);
+  }
+
+  // 비밀번호 불일치
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) {
+    throw createError(sc.BAD_REQUEST, rm.MISS_MATCH_PW);
+  }
+
+  return user;
+};
 
 /**
  * @토큰_생성

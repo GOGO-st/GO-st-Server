@@ -20,13 +20,12 @@ const { success, fail } = require("../modules/util");
 router.get("/", auth, async (req: Request, res: Response, next) => {
   const userId = res.locals.userId;
   try {
-    const reviews = await reviewService.getMyReviews(userId);
-    console.log(reviews);
-    if (reviews == null) {
+    const reviews = await reviewService.getReviews(userId);
+
+    if (!reviews) {
       return res
         .status(sc.NO_CONTENT)
         .send(fail(sc.NO_CONTENT, rm.READ_MY_REVIEW_FAIL));
-      next();
     }
 
     return res
@@ -38,11 +37,11 @@ router.get("/", auth, async (req: Request, res: Response, next) => {
 });
 
 /**
- *  @route GET reviews/:locationId
+ *  @route GET reviews/location
  *  @desc 특정 장소에 대한 리뷰 리턴
  *  @access Public
  */
-router.get("/:locationId", auth, async (req: Request, res: Response, next) => {
+router.get("/location", auth, async (req: Request, res: Response, next) => {
   const locationId = req.query.locationId;
 
   if (!locationId || !mongoose.isValidObjectId(locationId)) {
@@ -64,28 +63,42 @@ router.get("/:locationId", auth, async (req: Request, res: Response, next) => {
 });
 
 /**
- *  @route POST reviews/:locationId
- *  @desc 특정 장소에 대한 리뷰 작성
+ *  @route POST reviews/
+ *  @desc 새로운 리뷰 작성
  *  @access Public
  */
 router.post("/", auth, async (req: Request, res: Response, next) => {
   if (!req.body) return next(createError(401, rm.NULL_VALUE));
   const userId = res.locals.userId;
-  const { name, address, title, content, emoji, category } = req.body;
+  const { x, y } = req.query;
+  const { locationName, locationAddress, title, content, emoji, category } =
+    req.body;
 
-  if (!name || !address || !content || !title || !emoji)
+  if (
+    !locationName ||
+    !locationAddress ||
+    !x ||
+    !y ||
+    !category ||
+    !content ||
+    !title ||
+    !emoji
+  )
     next(createError(createError(sc.BAD_REQUEST, rm.NULL_VALUE)));
 
   try {
     const review = await reviewService.createReview(
-      name,
-      address,
       userId,
+      x,
+      y,
+      locationName,
+      locationAddress,
       title,
       content,
       emoji,
       category
     );
+    await mapService.updateLocationEmoji(review.emoji, review.location);
     res.status(sc.CREATED).send(success(sc.CREATED, rm.REVIEW_SUCCESS, review));
   } catch (error) {
     return next(error);
@@ -93,31 +106,29 @@ router.post("/", auth, async (req: Request, res: Response, next) => {
 });
 
 /**
- *  @route GET reviews/other/:userId
+ *  @route GET reviews/other/
  *  @desc 다른 유저의 리뷰 목록 리턴
  *  @access Public
  */
-router.get(
-  "/other/:userId",
-  auth,
-  async (req: Request, res: Response, next) => {
-    const { userId } = req.body;
+router.get("/other", auth, async (req: Request, res: Response, next) => {
+  const userId = req.query.userId;
+  console.log(userId);
 
-    try {
-      const reviews = await reviewService.getMyReviews(userId);
-      if (reviews.length == 0) {
-        res
-          .status(sc.NO_CONTENT)
-          .send(fail(sc.NO_CONTENT, rm.READ_REVIEW_LIST_FAIL));
-        next();
-      }
-      return res
-        .status(sc.OK)
-        .send(success(sc.OK, rm.READ_REVIEW_LIST_SUCCESS, reviews));
-    } catch (error) {
-      next(error);
+  try {
+    const reviews = await reviewService.getReviews(userId);
+    if (reviews == null) {
+      res
+        .status(sc.NO_CONTENT)
+        .send(fail(sc.NO_CONTENT, rm.READ_REVIEW_LIST_FAIL));
+      // next();
     }
+
+    return res
+      .status(sc.OK)
+      .send(success(sc.OK, rm.READ_REVIEW_LIST_SUCCESS, reviews));
+  } catch (error) {
+    next(error);
   }
-);
+});
 
 module.exports = router;

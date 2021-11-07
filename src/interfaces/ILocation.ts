@@ -1,14 +1,15 @@
 import mongoose from "mongoose";
+import { IReviewOutputDTO } from "./IReview";
 
 export interface ILocation {
   _id: string;
-  locationId: number;
-  name: string;
-  img?: string;
-  address: string;
-  latitude: number;
-  longitude: number;
+  locationName: string;
+  locationAddress: string;
+  x: number;
+  y: number;
   category?: string;
+  emoji: string;
+  review: [IReviewOutputDTO];
 }
 
 export interface ILocationForReviewDTO {
@@ -18,17 +19,18 @@ export interface ILocationForReviewDTO {
 
 export interface ILocationGeoDTO {
   _id: string;
-  locationId: number;
-  latitude: number;
-  longitude: number;
+  locationName: string;
+  locationAddress: string;
+  x: number;
+  y: number;
+  emoji: string;
 }
 
 export interface ILocationSearchDTO {
   _id: string;
-  locationId: number;
-  name: string;
-  address: string;
-  latitude?: number;
-  longitude?: number;
+  locationName: string;
+  locationAddress: string;
+  x: number;
+  y: number;
   category: string;
 }

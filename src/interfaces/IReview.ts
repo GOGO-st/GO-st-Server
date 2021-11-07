@@ -4,7 +4,8 @@ import { IUserReviewDTO, IUser } from "./IUser";
 
 export interface IReview {
   user: IUserReviewDTO & mongoose.Document<any, any>;
-  locationId: number;
+  locationName: string;
+  locationAddress: string;
   title: string;
   content: string;
   emoji: string;
@@ -14,9 +15,7 @@ export interface IReview {
 
 export interface IReviewOutputDTO {
   _id: string;
-  locationName: string;
-  locationId: number;
-  nickname: IWriterDTO;
+  nickname: string;
   title: string;
   content: string;
   emoji: string;
@@ -31,7 +30,6 @@ export interface IWriterDTO {
 export interface IReviewMyOutputDTO {
   _id: string;
   locationName: string;
-  locationId: number;
   emoji: string;
   title: string;
   content: string;

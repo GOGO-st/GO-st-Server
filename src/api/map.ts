@@ -28,11 +28,11 @@ router.get("/", async (req: Request, res: Response, next) => {
 });
 
 /**
- *  @route GET maps/:category
+ *  @route GET maps/category
  *  @desc 카테고리 필터링 장소 리턴
  *  @access Public
  */
-router.get("/:category", async (req: Request, res: Response, next) => {
+router.get("/category", async (req: Request, res: Response, next) => {
   const category = req.query.category;
 
   if (!category) {
@@ -60,8 +60,8 @@ router.get("/:category", async (req: Request, res: Response, next) => {
  *  @desc 특정 장소 상세 정보 리턴
  *  @access Public
  */
-router.get("/detail/:locationId", async (req: Request, res: Response, next) => {
-  const locationId = req.params.locationId;
+router.get("/detail", async (req: Request, res: Response, next) => {
+  const locationId = req.query.locationId;
 
   try {
     if (!mongoose.isValidObjectId(locationId)) {

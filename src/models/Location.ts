@@ -3,29 +3,29 @@ import { ILocation } from "../interfaces/ILocation";
 
 const LocationSchema = new mongoose.Schema(
   {
-    name: {
+    locationName: {
       type: String,
       required: true,
     },
-    img: {
-      type: String,
-      required: false,
-    },
-    address: {
+    locationAddress: {
       type: String,
       required: true,
     },
-    latitude: {
+    x: {
       type: Number,
       required: false,
     },
-    longitude: {
+    y: {
       type: Number,
       required: false,
     },
     category: {
       type: String,
       required: false,
+    },
+    emoji: {
+      type: String,
+      required: true,
     },
   },
   {
