@@ -3,8 +3,8 @@ import { ILocation } from "./ILocation";
 import { IUserReviewDTO, IUser } from "./IUser";
 
 export interface IReview {
-  location: ILocation;
   user: IUserReviewDTO & mongoose.Document<any, any>;
+  locationId: number;
   title: string;
   content: string;
   emoji: string;
@@ -14,7 +14,8 @@ export interface IReview {
 
 export interface IReviewOutputDTO {
   _id: string;
-  locationId: string;
+  locationName: string;
+  locationId: number;
   nickname: IWriterDTO;
   title: string;
   content: string;
@@ -30,7 +31,7 @@ export interface IWriterDTO {
 export interface IReviewMyOutputDTO {
   _id: string;
   locationName: string;
-  locationId: string;
+  locationId: number;
   emoji: string;
   title: string;
   content: string;

@@ -67,22 +67,14 @@ router.get("/:locationId", auth, async (req: Request, res: Response, next) => {
  *  @desc 특정 장소에 대한 리뷰 작성
  *  @access Public
  */
-router.post("/:locationId", auth, async (req: Request, res: Response, next) => {
-  console.log(req.body);
-  console.log(req);
-  if (!req.body || !req.body.review)
-    return next(createError(401, rm.NULL_VALUE));
-  const reviewParams = JSON.parse(req.body.review);
-  const locationId = req.query.location;
+router.post("/", auth, async (req: Request, res: Response, next) => {
+  if (!req.body) return next(createError(401, rm.NULL_VALUE));
   const userId = res.locals.userId;
-  const { title, content, emoji, category } = reviewParams;
+  const { title, content, emoji, category } = req.body;
+  var locationId = 0;
 
   if (!content || !title || !emoji)
     next(createError(createError(sc.BAD_REQUEST, rm.NULL_VALUE)));
-
-  if (!locationId || !mongoose.isValidObjectId(locationId)) {
-    return next(createError(sc.BAD_REQUEST, rm.INVALID_IDENTIFIER));
-  }
 
   try {
     const review = await reviewService.createReview(

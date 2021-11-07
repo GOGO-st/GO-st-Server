@@ -3,14 +3,13 @@ import { IReview } from "../interfaces/IReview";
 
 const ReviewSchema = new mongoose.Schema(
   {
-    location: {
-      type: mongoose.SchemaTypes.ObjectId,
-      ref: "Location",
-      required: true,
-    },
     user: {
       type: mongoose.SchemaTypes.ObjectId,
       ref: "User",
+      required: true,
+    },
+    locationId: {
+      type: Number,
       required: true,
     },
     title: {

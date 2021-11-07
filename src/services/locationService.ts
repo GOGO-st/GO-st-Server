@@ -6,13 +6,16 @@ const rm = require("../modules/responseMessage");
 const sc = require("../modules/statusCode");
 
 const getAllLocationList = async () => {
-  var locations = await Location.find().select("_id latitude longitude");
+  var locations = await Location.find().select(
+    "_id locationId latitude longitude"
+  );
 
   let LocationGeoList: ILocationGeoDTO[] = [];
 
   for (let location of locations) {
     let point: ILocationGeoDTO = {
       _id: location._id,
+      locationId: location.locationId,
       latitude: location.latitude,
       longitude: location.longitude,
     };
@@ -26,7 +29,7 @@ const getAllLocationList = async () => {
 
 const getLocationListByCategory = async category => {
   var locations = await Location.find({ category: category }).select(
-    "_id latitude longitude"
+    "_id locationId latitude longitude"
   );
 
   let LocationGeoList: ILocationGeoDTO[] = [];
@@ -34,6 +37,7 @@ const getLocationListByCategory = async category => {
   for (let location of locations) {
     let point: ILocationGeoDTO = {
       _id: location._id,
+      locationId: location.locationId,
       latitude: location.latitude,
       longitude: location.longitude,
     };

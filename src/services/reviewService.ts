@@ -1,11 +1,14 @@
 import Review from "../models/Review";
+import Location from "../models/Location";
 import {
   IReviewOutputDTO,
   IWriterDTO,
   IReviewMyOutputDTO,
 } from "../interfaces/IReview";
+import { ILocationForReviewDTO } from "../interfaces/ILocation";
 import createError from "http-errors";
 
+const locationService = require("../services/locationService");
 const rm = require("../modules/responseMessage");
 const date = require("../modules/date");
 
@@ -24,7 +27,8 @@ const getLocationReviewList = async locationId => {
     };
     let reviewDTO: IReviewOutputDTO = {
       _id: review._id,
-      locationId: review.location._id,
+      locationName: "review.locationId",
+      locationId: 0,
       nickname: writerDTO,
       title: review.title,
       content: review.content,
@@ -37,18 +41,14 @@ const getLocationReviewList = async locationId => {
   return reviewDTOList;
 };
 
-const createReview = async (
-  locationId,
-  userId,
-  title,
-  content,
-  emoji,
-  category
-) => {
+const createReview = async (userId, title, content, emoji, category) => {
   try {
+    const allLocation = await Location.find({});
+    console.log(allLocation);
+
     const review = new Review({
       user: userId,
-      location: locationId,
+      location: 0,
       title: title,
       content: content,
       emoji: emoji,
@@ -77,8 +77,8 @@ const getMyReviews = async userId => {
   for (let review of myReviews) {
     let myReview: IReviewMyOutputDTO = {
       _id: review._id,
-      locationName: review.location.name,
-      locationId: review.location._id,
+      locationName: "location.name",
+      locationId: 0,
       title: review.title,
       content: review.content,
       emoji: review.emoji,

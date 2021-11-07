@@ -1,6 +1,8 @@
 import config from "../config";
 import jwt from "jsonwebtoken";
 import User from "../models/User";
+import bcrypt from "bcryptjs";
+
 const createError = require("http-errors");
 const sc = require("../modules/statusCode");
 const rm = require("../modules/responseMessage");
@@ -31,7 +33,7 @@ const generateToken = async userId => {
 /**
  * @회원_가입
  */
-const signupUser = async email => {
+const signupUser = async (email, password) => {
   const isUsedEmail = await User.findOne({ email });
   if (isUsedEmail != null) {
     throw createError(sc.BAD_REQUEST, rm.ALREADY_EMAIL);
@@ -44,9 +46,14 @@ const signupUser = async email => {
   const user = new User({
     email,
     nickname,
+    password,
     school,
     created_at,
   });
+
+  // Encrypt password
+  const salt = await bcrypt.genSalt(10);
+  user.password = await bcrypt.hash(password, salt);
 
   await user.save();
   return user;

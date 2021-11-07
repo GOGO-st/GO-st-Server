@@ -14,27 +14,31 @@ const userService = require("../services/userService");
  *  @desc Authenticate user & get token(로그인)
  *  @access Public
  */
-//TODO. 자동 로그인 작성하기
+//TODO. 로그인 작성하기
 
 /**
  *  @route Post user/signup
  *  @desc 이메일 인증 성공 시 user 데이터 생성 (회원가입)
  *  @access Public
  */
+//TODO. 비밀번호 로직 작성하기
 router.post(
   "/signup",
   [
     check("email", "email is required").not().isEmpty(),
     check("email", "Please include a valid email").isEmail(),
+    check("password", "password is required").not().isEmpty(),
   ],
   async (req: Request, res: Response, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return next(createError(sc.BAD_REQUEST, rm.NULL_VALUE));
     }
-    const email = req.body.email;
+
+    const { email, password } = req.body;
+
     try {
-      const user = await userService.signupUser(email);
+      const user = await userService.signupUser(email, password);
       const userToken = await userService.generateToken(user._id);
 
       return res.status(sc.CREATED).send(

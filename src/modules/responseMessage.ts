@@ -70,6 +70,14 @@ module.exports = {
   LOCATE_REQUEST_FAIL: "위치 요청에 필요한 값이 잘못되었습니다.",
 
   /**
+   * @geo
+   */
+  GET_LOCATION_SUCCESS: "주소 가져오기 성공",
+  GET_LOCATION_FAIL: "주소 가져오기 실패",
+  SEARCH_SUCCESS: "장소 검색 성공",
+  SEARCH_FAIL: "장소 검색 실패",
+
+  /**
    * @etc
    */
   SERVER_ERROR: "서버 내부 오류",

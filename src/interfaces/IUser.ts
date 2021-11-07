@@ -1,6 +1,7 @@
 export interface IUser {
   email: string;
   nickname: string;
+  password: string;
   school: string;
   created_at?: Date;
   deleted_at?: Date;

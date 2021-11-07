@@ -31,4 +31,6 @@ export default {
   awsS3Bucket: process.env.S3_BUCKET,
   mapClientId: process.env.MAP_CLIENT_ID,
   mapSecretKey: process.env.MAP_SECRET_KEY,
+  searchClientId: process.env.SEARCH_CLIENT_ID,
+  searchSecretKey: process.env.SEARCH_SECRET_KEY,
 };
