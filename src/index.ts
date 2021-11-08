@@ -2,10 +2,16 @@ import express from "express";
 import config from "./config";
 import connectDB from "./loader/db";
 import { logger } from "./modules/logger";
+import helmet from "helmet";
+
 const app = express();
 // Connect Database
 connectDB();
 
+// Security
+app.use(helmet());
+
+// Client
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
