@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import Location from "../models/Location";
 import express, { Request, Response } from "express";
 import axios from "axios";
+import auth from "../middleware/auth";
 const router = express.Router();
 const sc = require("../modules/statusCode");
 const rm = require("../modules/responseMessage");
@@ -15,9 +16,9 @@ const { success, fail } = require("../modules/util");
  * @desc 주소를 좌표로 변환합니다.
  * @access Public
  */
-router.get("/address", async (req: Request, res: Response, next) => {
+router.get("/address", auth, async (req: Request, res: Response, next) => {
   const address = req.query.address;
-  console.log(address);
+
   try {
     if (!address)
       return res.status(sc.NO_CONTENT).send(fail(sc.NO_CONTENT, rm.NO_CONTENT));
@@ -39,7 +40,7 @@ router.get("/address", async (req: Request, res: Response, next) => {
  *  @desc 좌표를 주소로 변환합니다.
  *  @access Public
  */
-router.get("/coord", async (req: Request, res: Response, next) => {
+router.get("/coord", auth, async (req: Request, res: Response, next) => {
   const { x, y } = req.query;
 
   try {
@@ -60,7 +61,7 @@ router.get("/coord", async (req: Request, res: Response, next) => {
 /**
  * @route GET geo/search
  */
-router.get("/search", async (req: Request, res: Response, next) => {
+router.get("/search", auth, async (req: Request, res: Response, next) => {
   const keyword = req.query.keyword;
   try {
     if (!keyword)

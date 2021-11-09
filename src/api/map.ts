@@ -1,7 +1,7 @@
 import createError from "http-errors";
 import express, { Request, Response } from "express";
 import mongoose from "mongoose";
-
+import auth from "../middleware/auth";
 const router = express.Router();
 const sc = require("../modules/statusCode");
 const rm = require("../modules/responseMessage");
@@ -13,7 +13,7 @@ const { success, fail } = require("../modules/util");
  *  @desc 모든 장소를 리턴
  *  @access Public
  */
-router.get("/", async (req: Request, res: Response, next) => {
+router.get("/", auth, async (req: Request, res: Response, next) => {
   try {
     const locationList = await mapService.getAllLocationList();
     if (!locationList)
@@ -32,7 +32,7 @@ router.get("/", async (req: Request, res: Response, next) => {
  *  @desc 카테고리 필터링 장소 리턴
  *  @access Public
  */
-router.get("/category", async (req: Request, res: Response, next) => {
+router.get("/category", auth, async (req: Request, res: Response, next) => {
   const category = req.query.category;
 
   if (!category) {
@@ -60,7 +60,7 @@ router.get("/category", async (req: Request, res: Response, next) => {
  *  @desc 특정 장소 상세 정보 리턴
  *  @access Public
  */
-router.get("/detail", async (req: Request, res: Response, next) => {
+router.get("/detail", auth, async (req: Request, res: Response, next) => {
   const locationId = req.query.locationId;
 
   try {
