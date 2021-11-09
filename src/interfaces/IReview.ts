@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
-import { ILocation } from "./ILocation";
-import { IUserReviewDTO, IUser } from "./IUser";
+import { IUserReviewDTO } from "./IUser";
 
 export interface IReview {
   user: IUserReviewDTO & mongoose.Document<any, any>;
@@ -15,6 +14,7 @@ export interface IReview {
 
 export interface IReviewOutputDTO {
   _id: string;
+  user: string;
   nickname: string;
   title: string;
   content: string;

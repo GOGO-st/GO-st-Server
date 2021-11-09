@@ -1,13 +1,11 @@
 import axios from "axios";
-import createError from "http-errors";
-import mongoose from "mongoose";
-import { nextTick } from "process";
 import config from "../config";
 
 const { getSearchedLocationTitle } = require("../modules/getLocation");
-const rm = require("../modules/responseMessage");
-const sc = require("../modules/statusCode");
 
+/**
+ * @장소_검색
+ */
 const searchLocation = async keyword => {
   const NAVERURL = `https://openapi.naver.com/v1/search/local.json?query=${encodeURI(
     keyword

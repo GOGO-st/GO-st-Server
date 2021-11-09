@@ -2,8 +2,6 @@ import auth from "../middleware/auth";
 import createError from "http-errors";
 import express, { Request, Response } from "express";
 import mongoose from "mongoose";
-import { check, validationResult } from "express-validator";
-import User from "../models/User";
 
 const router = express.Router();
 const sc = require("../modules/statusCode");

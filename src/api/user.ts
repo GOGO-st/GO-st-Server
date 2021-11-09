@@ -1,12 +1,11 @@
 import createError from "http-errors";
 import express, { Request, Response } from "express";
-import config from "../config";
 import { check, validationResult } from "express-validator";
-import auth from "../middleware/auth";
+
 const router = express.Router();
 const sc = require("../modules/statusCode");
 const rm = require("../modules/responseMessage");
-const { success, fail } = require("../modules/util");
+const { success } = require("../modules/util");
 const userService = require("../services/userService");
 
 /**

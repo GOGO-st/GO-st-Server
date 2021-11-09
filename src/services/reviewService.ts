@@ -1,19 +1,15 @@
 import Review from "../models/Review";
 import Location from "../models/Location";
-import {
-  IReviewOutputDTO,
-  IWriterDTO,
-  IReviewMyOutputDTO,
-} from "../interfaces/IReview";
-import { ILocationForReviewDTO } from "../interfaces/ILocation";
+import { IReviewOutputDTO, IReviewMyOutputDTO } from "../interfaces/IReview";
 import createError from "http-errors";
-import User from "../models/User";
 
 const mapService = require("../services/mapService");
-const geoService = require("../services/geoService");
 const rm = require("../modules/responseMessage");
 const date = require("../modules/date");
 
+/**
+ * @특정_장소_리뷰_조회
+ */
 const getLocationReviewList = async locationId => {
   const reviews = await Review.find()
     .where("location")
@@ -45,6 +41,9 @@ const getLocationReviewList = async locationId => {
   return reviewDTOList;
 };
 
+/**
+ * @리뷰
+ */
 const review = async (userId, locationId, title, content, emoji, category) => {
   try {
     const review = new Review({
@@ -65,6 +64,9 @@ const review = async (userId, locationId, title, content, emoji, category) => {
   }
 };
 
+/**
+ * @리뷰_체크후_작성
+ */
 const createReview = async (
   userId,
   x,
@@ -103,6 +105,9 @@ const createReview = async (
   }
 };
 
+/**
+ * @리뷰_조회
+ */
 const getReviews = async userId => {
   const myReviews = await Review.find()
     .where("user")
@@ -128,6 +133,9 @@ const getReviews = async userId => {
   return myReviewsDTO;
 };
 
+/**
+ * @리뷰_여부_판별
+ */
 const checkReviewed = async (x, y) => {
   const review = await Location.findOne({ x: x, y: y });
   if (!review) return false;

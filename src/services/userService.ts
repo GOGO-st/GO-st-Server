@@ -106,6 +106,9 @@ const mailToUser = async email => {
   return verifyCode;
 };
 
+/**
+ * @유저_정보_조회
+ */
 const getUserInfo = async userId => {
   const user = await User.find().where("_id").equals(userId).select("nickname");
   return user[0];

@@ -1,9 +1,7 @@
 import createError from "http-errors";
-import mongoose from "mongoose";
-import Location from "../models/Location";
 import express, { Request, Response } from "express";
-import axios from "axios";
 import auth from "../middleware/auth";
+
 const router = express.Router();
 const sc = require("../modules/statusCode");
 const rm = require("../modules/responseMessage");

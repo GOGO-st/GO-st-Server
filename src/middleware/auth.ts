@@ -5,14 +5,12 @@ const rm = require("../modules/responseMessage");
 const sc = require("../modules/statusCode");
 
 export default (req, res, next) => {
-  // Get token from header
   const token = req.header("token");
-  // Check if not token
+
   if (!token) {
     next(createError(sc.BAD_REQUEST, rm.NO_TOKEN));
   }
 
-  // Verify token
   try {
     const decoded = jwt.verify(token, config.jwtSecret);
 

@@ -2,12 +2,14 @@ import Location from "../models/Location";
 import Review from "../models/Review";
 import User from "../models/User";
 import createError from "http-errors";
-import { ILocationGeoDTO, ILocationSearchDTO } from "../interfaces/ILocation";
-import mongoose from "mongoose";
+import { ILocationGeoDTO } from "../interfaces/ILocation";
 import { IReviewOutputDTO } from "../interfaces/IReview";
-const rm = require("../modules/responseMessage");
-const sc = require("../modules/statusCode");
 
+const rm = require("../modules/responseMessage");
+
+/**
+ * @전체_장소_조회
+ */
 const getAllLocationList = async () => {
   var locations = await Location.find().select(
     "_id locationName locationAddress x y emoji"
@@ -32,6 +34,9 @@ const getAllLocationList = async () => {
   return LocationGeoList;
 };
 
+/**
+ * @카테고리별_장소_조회
+ */
 const getLocationListByCategory = async category => {
   var locations = await Location.find({ category: { $regex: category } });
 
@@ -54,6 +59,9 @@ const getLocationListByCategory = async category => {
   return LocationGeoList;
 };
 
+/**
+ * @특정_장소_상세정보_조회
+ */
 const getLocationDetailById = async locationId => {
   const detail = await Location.findById(locationId);
   const reviews = await Review.find()
@@ -86,6 +94,9 @@ const getLocationDetailById = async locationId => {
   return { detail, reviewList };
 };
 
+/**
+ * @장소_위치_저장
+ */
 const saveCoord = async (
   x,
   y,
@@ -113,6 +124,9 @@ const saveCoord = async (
   }
 };
 
+/**
+ * @장소_대표이모지_업데이트
+ */
 const updateLocationEmoji = async (emoji, locationId) => {
   await Location.findOneAndUpdate({ _id: locationId }, { emoji: emoji });
 };
