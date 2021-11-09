@@ -7,6 +7,7 @@ import {
 } from "../interfaces/IReview";
 import { ILocationForReviewDTO } from "../interfaces/ILocation";
 import createError from "http-errors";
+import User from "../models/User";
 
 const mapService = require("../services/mapService");
 const geoService = require("../services/geoService");
@@ -31,6 +32,7 @@ const getLocationReviewList = async locationId => {
   for (let review of reviews) {
     let reviewDTO: IReviewOutputDTO = {
       _id: review._id,
+      user: review.user._id,
       nickname: review.user.nickname,
       title: review.title,
       content: review.content,
@@ -51,7 +53,7 @@ const review = async (userId, locationId, title, content, emoji, category) => {
       title: title,
       content: content,
       emoji: emoji,
-      category: category,
+      category: [category],
       created_at: date.getDate(),
     });
 
@@ -83,27 +85,17 @@ const createReview = async (
         y,
         locationName,
         locationAddress,
-        category,
+        [category],
         emoji
       );
-      return await review(
-        userId,
-        location._id,
-        title,
-        content,
-        emoji,
-        category
-      );
+      return await review(userId, location._id, title, content, emoji, [
+        category,
+      ]);
     } else {
       const location = await Location.findOne({ x: x, y: y });
-      return await review(
-        userId,
-        location._id,
-        title,
-        content,
-        emoji,
-        category
-      );
+      return await review(userId, location._id, title, content, emoji, [
+        category,
+      ]);
     }
   } catch (error) {
     console.log(error.message);
@@ -112,9 +104,10 @@ const createReview = async (
 };
 
 const getReviews = async userId => {
-  const myReviews = await Review.find({ user: userId }).sort({
-    created_at: -1,
-  });
+  const myReviews = await Review.find()
+    .where("user")
+    .equals(userId)
+    .sort({ created_at: -1 });
 
   if (myReviews.length == 0) return null;
 

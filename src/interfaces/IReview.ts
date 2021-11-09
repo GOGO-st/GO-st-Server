@@ -9,7 +9,7 @@ export interface IReview {
   title: string;
   content: string;
   emoji: string;
-  category: string;
+  category: [string];
   created_at: Date;
 }
 

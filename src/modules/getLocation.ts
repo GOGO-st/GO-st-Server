@@ -1,6 +1,6 @@
 const gs = require("../services/geoService");
 
-const getLocation = data => {
+const getAddress = data => {
   let region = "";
   let land = "";
 
@@ -29,4 +29,4 @@ const getSearchedLocationTitle = data => {
   return titleList;
 };
 
-module.exports = { getLocation, getSearchedLocationTitle };
+module.exports = { getAddress, getSearchedLocationTitle };

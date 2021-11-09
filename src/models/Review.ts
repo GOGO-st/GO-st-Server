@@ -26,7 +26,7 @@ const ReviewSchema = new mongoose.Schema(
       required: true,
     },
     category: {
-      type: String,
+      type: [String],
       required: true,
     },
     created_at: {

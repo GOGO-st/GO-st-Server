@@ -16,12 +16,17 @@ const { success, fail } = require("../modules/util");
  * @access Public
  */
 router.get("/address", async (req: Request, res: Response, next) => {
-  const location = req.query.location;
+  const address = req.query.address;
+  console.log(address);
   try {
-    if (!location)
+    if (!address)
       return res.status(sc.NO_CONTENT).send(fail(sc.NO_CONTENT, rm.NO_CONTENT));
 
-    await geoService.requestGeocoding(location);
+    const coord = await geoService.requestGeocoding(address);
+
+    return res
+      .status(sc.OK)
+      .send(success(sc.OK, rm.GET_LOCATION_SUCCESS, coord));
   } catch (error) {
     if (error.response.status)
       return next(createError(error.response.status, error.message));
@@ -36,19 +41,18 @@ router.get("/address", async (req: Request, res: Response, next) => {
  */
 router.get("/coord", async (req: Request, res: Response, next) => {
   const { x, y } = req.query;
-  const location = x + "," + y;
+
   try {
     if (!x || !y)
       return res.status(sc.NULL_VALUE).send(fail(sc.NULL_VALUE, rm.NULL_VALUE));
 
-    const address = await geoService.requestLocation(location);
+    const address = await geoService.requestLocation(x, y);
 
     return res
       .status(sc.OK)
       .send(success(sc.OK, rm.GET_LOCATION_SUCCESS, address));
   } catch (error) {
-    if (error.response.status)
-      return next(createError(error.response.status, error.message));
+    if (error) return next(createError(error.message));
     return next(createError(error));
   }
 });

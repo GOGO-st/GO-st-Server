@@ -3,13 +3,14 @@ import createError from "http-errors";
 import express, { Request, Response } from "express";
 import mongoose from "mongoose";
 import { check, validationResult } from "express-validator";
+import User from "../models/User";
 
 const router = express.Router();
 const sc = require("../modules/statusCode");
 const rm = require("../modules/responseMessage");
 const mapService = require("../services/mapService");
 const reviewService = require("../services/reviewService");
-
+const userService = require("../services/userService");
 const { success, fail } = require("../modules/util");
 
 /**
@@ -112,20 +113,22 @@ router.post("/", auth, async (req: Request, res: Response, next) => {
  */
 router.get("/other", auth, async (req: Request, res: Response, next) => {
   const userId = req.query.userId;
-  console.log(userId);
-
+  const user = await userService.getUserInfo(userId);
   try {
+    const nickname = user.nickname;
     const reviews = await reviewService.getReviews(userId);
     if (reviews == null) {
-      res
-        .status(sc.NO_CONTENT)
-        .send(fail(sc.NO_CONTENT, rm.READ_REVIEW_LIST_FAIL));
-      // next();
+      return next(createError(sc.NO_CONTENT, rm.NO_CONTENT));
     }
+    const reviewCount = reviews.length;
 
-    return res
-      .status(sc.OK)
-      .send(success(sc.OK, rm.READ_REVIEW_LIST_SUCCESS, reviews));
+    return res.status(sc.OK).send(
+      success(sc.OK, rm.READ_REVIEW_LIST_SUCCESS, {
+        nickname,
+        reviewCount,
+        reviews,
+      })
+    );
   } catch (error) {
     next(error);
   }

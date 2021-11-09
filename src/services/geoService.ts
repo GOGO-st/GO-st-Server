@@ -12,7 +12,6 @@ const NAVER_MAP_URL =
 // 좌표로 주소 get
 const requestLocation = async (x, y) => {
   const NAVER_REVERSE_URL = `https://naveropenapi.apigw.ntruss.com/map-reversegeocode/v2/gc?coords=${x},${y}&output=json&orders=roadaddr`;
-
   const coord = await axios.get(NAVER_REVERSE_URL, {
     headers: {
       "X-NCP-APIGW-API-KEY-ID": config.mapClientId,
@@ -28,7 +27,6 @@ const requestLocation = async (x, y) => {
 
 // 주소로 좌표 get
 const requestGeocoding = async address => {
-  console.log(address);
   const coord = await axios.get(NAVER_MAP_URL, {
     params: {
       query: address,
@@ -39,13 +37,11 @@ const requestGeocoding = async address => {
     },
   });
 
-  if (!coord.data.addresses) return null;
+  //   if (!coord.data.addresses) return null;
+  const x = coord.data.addresses[0].x;
+  const y = coord.data.addresses[0].y;
 
-  if (coord.data.addresses.length != 1) {
-    console.log(address, "좌표값이 두 개 이상입니다.");
-  }
-
-  return coord.data.addresses[0];
+  return { x, y };
 };
 
 module.exports = {

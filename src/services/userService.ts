@@ -17,6 +17,7 @@ const nodemailer = require("nodemailer");
  */
 const loginUser = async (email, password) => {
   let user = await User.findOne({ email });
+  console.log(user);
 
   // 없는 유저
   if (!user) {
@@ -76,10 +77,10 @@ const signupUser = async (email, password) => {
  * @이메일_인증
  */
 const mailToUser = async email => {
-  //   const user = await User.findOne({ email: email });
-  //   if (user) {
-  //     throw createError(sc.BAD_REQUEST, rm.ALREADY_EMAIL);
-  //   } // DB, 자동로그인 완성 시 추가
+  const user = await User.findOne({ email: email });
+  if (user) {
+    throw createError(sc.BAD_REQUEST, rm.ALREADY_EMAIL);
+  }
 
   let transporter = nodemailer.createTransport({
     service: "gmail",
@@ -105,9 +106,15 @@ const mailToUser = async email => {
   return verifyCode;
 };
 
+const getUserInfo = async userId => {
+  const user = await User.find().where("_id").equals(userId).select("nickname");
+  return user[0];
+};
+
 module.exports = {
   loginUser,
   signupUser,
   generateToken,
   mailToUser,
+  getUserInfo,
 };

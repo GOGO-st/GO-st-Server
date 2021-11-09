@@ -33,7 +33,7 @@ const getAllLocationList = async () => {
 };
 
 const getLocationListByCategory = async category => {
-  var locations = await Location.find({ category: category });
+  var locations = await Location.find({ category: { $regex: category } });
 
   let LocationGeoList: ILocationGeoDTO[] = [];
 
@@ -67,6 +67,7 @@ const getLocationDetailById = async locationId => {
     let user = await User.findById(review.user);
     let point: IReviewOutputDTO = {
       _id: review._id,
+      user: user._id,
       nickname: user.nickname,
       title: review.title,
       content: review.content,

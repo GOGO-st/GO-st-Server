@@ -10,7 +10,7 @@ const { success, fail } = require("../modules/util");
 const userService = require("../services/userService");
 
 /**
- *  @route Post user/login
+ *  @route Post users/login
  *  @desc Authenticate user & get token(로그인)
  *  @access Public
  */
@@ -42,7 +42,7 @@ router.post(
 );
 
 /**
- *  @route Post user/signup
+ *  @route Post users/signup
  *  @desc 이메일 인증 성공 시 user 데이터 생성 (회원가입)
  *  @access Public
  */
@@ -79,7 +79,7 @@ router.post(
 );
 
 /**
- *  @route Post user/auth
+ *  @route Post users/auth
  *  @desc 이메일 인증 번호 전송 및 클라이언트 인증 번호 리턴
  *  @access Public
  */
@@ -109,7 +109,7 @@ router.post(
 );
 
 /**
- *  @route Get user/myInfo
+ *  @route Get users
  *  @desc 마이페이지 ( 닉네임, 리뷰 목록 )
  */
 // TODO. 마이페이지 작성하기
