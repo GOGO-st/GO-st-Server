@@ -99,8 +99,7 @@ const mailToUser = async email => {
     from: `"Test" <${process.env.NODEMAILER_USER}>`,
     to: email,
     subject: "Test 비밀번호 인증 메일입니다.",
-    text: "앱으로 돌아가서 해당 인증코드를 입력해주세요 :)",
-    html: `앱으로 돌아가서 해당 인증코드를 입력해주세요 :)</br> 인증코드는 <b>${verifyCode}</b> 입니다.`,
+    html: `<h3>앱으로 돌아가서 해당 인증코드를 입력해주세요 :)</h3><p> 인증코드는 <b>${verifyCode}</b> 입니다.</p>`,
   });
 
   return verifyCode;
