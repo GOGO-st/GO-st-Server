@@ -1,5 +1,8 @@
 const gs = require("../services/geoService");
 
+/**
+ * @도로명_주소
+ */
 const getAddress = data => {
   let region = "";
   let land = "";
@@ -17,6 +20,9 @@ const getAddress = data => {
   return address;
 };
 
+/**
+ * @장소_검색_파싱
+ */
 const getSearchedLocationTitle = data => {
   let titleList = [];
 

@@ -1,3 +1,6 @@
+/**
+ * @시간
+ */
 exports.getDate = () => {
   var date = new Date();
   var year = date.getFullYear();

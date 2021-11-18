@@ -1,3 +1,6 @@
+/**
+ * @Response_모듈
+ */
 module.exports = {
   success: (status, message, data) => {
     return {
