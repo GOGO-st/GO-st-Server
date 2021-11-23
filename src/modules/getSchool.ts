@@ -1,17 +1,12 @@
-const schools = require("./schoolList");
+import School from "../models/School";
 
 /**
  * @이메일_학교_파싱
  */
-const getSchool = email => {
+const getSchool = async email => {
   const eng = email.split("@")[1].split(".")[0];
-  let kor;
-  schools.forEach(school => {
-    if (school.eng == eng) {
-      kor = school.kor;
-    }
-  });
-  return kor;
+  const school = await School.findOne({ eng });
+  return school.kor;
 };
 
 module.exports = getSchool;

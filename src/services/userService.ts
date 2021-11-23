@@ -54,7 +54,7 @@ const signupUser = async (email, password) => {
   }
 
   const nickname = generateNickname(nickNameSet);
-  const school = getSchool(email);
+  const school = await getSchool(email);
 
   let created_at = date.getDate();
   const user = new User({

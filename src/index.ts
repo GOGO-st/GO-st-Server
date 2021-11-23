@@ -5,6 +5,7 @@ import { logger } from "./modules/logger";
 import helmet from "helmet";
 
 const app = express();
+
 // Connect Database
 connectDB();
 
