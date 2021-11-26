@@ -1,8 +1,9 @@
 import mongoose from "mongoose";
 import { IUserReviewDTO } from "./IUser";
-
+import { ILocationForReviewDTO } from "./ILocation";
 export interface IReview {
   user: IUserReviewDTO & mongoose.Document<any, any>;
+  location: ILocationForReviewDTO & mongoose.Document<any, any>;
   locationName: string;
   locationAddress: string;
   title: string;
