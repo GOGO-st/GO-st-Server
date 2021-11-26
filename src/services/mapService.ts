@@ -6,6 +6,7 @@ import { ILocationGeoDTO } from "../interfaces/ILocation";
 import { IReviewOutputDTO } from "../interfaces/IReview";
 
 const rm = require("../modules/responseMessage");
+const reviewService = require("../services/reviewService");
 
 /**
  * @전체_장소_조회
@@ -18,6 +19,8 @@ const getAllLocationList = async () => {
   let LocationGeoList: ILocationGeoDTO[] = [];
 
   for (let location of locations) {
+    let reviews = await reviewService.getLocationReviewList(location._id);
+
     let point: ILocationGeoDTO = {
       _id: location._id,
       locationName: location.locationName,
@@ -25,6 +28,7 @@ const getAllLocationList = async () => {
       x: location.x,
       y: location.y,
       emoji: location.emoji,
+      reviewCount: reviews.length,
     };
     LocationGeoList.push(point);
   }
@@ -43,6 +47,8 @@ const getLocationListByCategory = async category => {
   let LocationGeoList: ILocationGeoDTO[] = [];
 
   for (let location of locations) {
+    let reviews = await reviewService.getLocationReviewList(location._id);
+
     let point: ILocationGeoDTO = {
       _id: location._id,
       locationName: location.locationName,
@@ -50,6 +56,7 @@ const getLocationListByCategory = async category => {
       x: location.x,
       y: location.y,
       emoji: location.emoji,
+      reviewCount: reviews.length,
     };
     LocationGeoList.push(point);
   }
@@ -63,13 +70,23 @@ const getLocationListByCategory = async category => {
  * @특정_장소_상세정보_조회
  */
 const getLocationDetailById = async locationId => {
-  const detail = await Location.findById(locationId);
+  const locationDetail = await Location.findById(locationId);
   const reviews = await Review.find()
     .where("location")
     .equals(locationId)
     .sort({ created_at: -1 });
 
   let reviewList: IReviewOutputDTO[] = [];
+
+  let detail: ILocationGeoDTO = {
+    _id: locationDetail._id,
+    locationName: locationDetail.locationName,
+    locationAddress: locationDetail.locationAddress,
+    x: locationDetail.x,
+    y: locationDetail.y,
+    emoji: locationDetail.emoji,
+    reviewCount: reviews.length,
+  };
 
   for (let review of reviews) {
     let user = await User.findById(review.user);
@@ -116,12 +133,19 @@ const saveCoord = async (
     });
 
     await location.save();
-
     return location;
   } catch (error) {
     console.log(error.message);
     throw createError(rm.INTERNAL_SERVER_ERROR);
   }
+};
+
+/**
+ * @좌표로_특정_장소_조회
+ */
+const getLocationByPoint = async (x, y) => {
+  const location = await Location.findOne({ x: x, y: y });
+  return location;
 };
 
 /**
@@ -131,10 +155,20 @@ const updateLocationEmoji = async (emoji, locationId) => {
   await Location.findOneAndUpdate({ _id: locationId }, { emoji: emoji });
 };
 
+/**
+ * @리뷰_삭제후_장소_이모지_업데이트
+ */
+const updateLocationEmojiAfterReviewDeleted = async locationId => {
+  const emoji = await reviewService.getEmojies(locationId);
+  await Location.findOneAndUpdate({ _id: locationId }, { emoji: emoji });
+};
+
 module.exports = {
-  updateLocationEmoji,
   getAllLocationList,
   getLocationListByCategory,
   getLocationDetailById,
+  getLocationByPoint,
   saveCoord,
+  updateLocationEmoji,
+  updateLocationEmojiAfterReviewDeleted,
 };

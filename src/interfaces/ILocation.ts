@@ -7,8 +7,8 @@ export interface ILocation {
   locationAddress: string;
   x: number;
   y: number;
-  category?: string;
-  emoji: string;
+  category?: string[];
+  emoji: string[];
   review: [IReviewOutputDTO];
 }
 
@@ -23,7 +23,8 @@ export interface ILocationGeoDTO {
   locationAddress: string;
   x: number;
   y: number;
-  emoji: string;
+  emoji: string[];
+  reviewCount: number;
 }
 
 export interface ILocationSearchDTO {
@@ -32,5 +33,5 @@ export interface ILocationSearchDTO {
   locationAddress: string;
   x: number;
   y: number;
-  category: string;
+  category: string[];
 }

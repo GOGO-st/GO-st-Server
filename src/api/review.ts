@@ -18,13 +18,12 @@ const { success, fail } = require("../modules/util");
  */
 router.get("/", auth, async (req: Request, res: Response, next) => {
   const userId = res.locals.userId;
+
   try {
     const reviews = await reviewService.getReviews(userId);
 
     if (!reviews) {
-      return res
-        .status(sc.NO_CONTENT)
-        .send(fail(sc.NO_CONTENT, rm.READ_MY_REVIEW_FAIL));
+      return res.send(success(sc.NO_CONTENT, rm.NO_CONTENT, reviews));
     }
 
     return res
@@ -36,15 +35,15 @@ router.get("/", auth, async (req: Request, res: Response, next) => {
 });
 
 /**
- *  @route GET reviews/location
+ *  @route GET reviews/:locationId
  *  @desc 특정 장소에 대한 리뷰 리턴
  *  @access Public
  */
-router.get("/location", auth, async (req: Request, res: Response, next) => {
-  const locationId = req.query.locationId;
+router.get("/:locationId", auth, async (req: Request, res: Response, next) => {
+  const { locationId } = req.params;
 
   if (!locationId || !mongoose.isValidObjectId(locationId)) {
-    next(createError(sc.BAD_REQUEST, rm.INVALID_IDENTIFIER));
+    return res.status(sc.NULL_VALUE).send(fail(sc.NULL_VALUE, rm.NULL_VALUE));
   }
 
   try {
@@ -83,7 +82,7 @@ router.post("/", auth, async (req: Request, res: Response, next) => {
     !title ||
     !emoji
   )
-    next(createError(createError(sc.BAD_REQUEST, rm.NULL_VALUE)));
+    return res.status(sc.NULL_VALUE).send(fail(sc.NULL_VALUE, rm.NULL_VALUE));
 
   try {
     const review = await reviewService.createReview(
@@ -97,7 +96,12 @@ router.post("/", auth, async (req: Request, res: Response, next) => {
       emoji,
       category
     );
-    await mapService.updateLocationEmoji(review.emoji, review.location);
+
+    const location = await mapService.getLocationByPoint(x, y);
+    let emojies = await reviewService.getEmojies(location._id);
+
+    await mapService.updateLocationEmoji(emojies, review.location);
+
     res.status(sc.CREATED).send(success(sc.CREATED, rm.REVIEW_SUCCESS, review));
   } catch (error) {
     return next(error);
@@ -109,24 +113,70 @@ router.post("/", auth, async (req: Request, res: Response, next) => {
  *  @desc 다른 유저의 리뷰 목록 리턴
  *  @access Public
  */
-router.get("/other", auth, async (req: Request, res: Response, next) => {
-  const userId = req.query.userId;
-  const user = await userService.getUserInfo(userId);
-  try {
-    const nickname = user.nickname;
-    const reviews = await reviewService.getReviews(userId);
-    if (reviews == null) {
-      return next(createError(sc.NO_CONTENT, rm.NO_CONTENT));
-    }
-    const reviewCount = reviews.length;
+router.get(
+  "/other/:userId",
+  auth,
+  async (req: Request, res: Response, next) => {
+    const { userId } = req.params;
+    if (!userId)
+      return res.status(sc.NULL_VALUE).send(fail(sc.NULL_VALUE, rm.NULL_VALUE));
 
-    return res.status(sc.OK).send(
-      success(sc.OK, rm.READ_REVIEW_LIST_SUCCESS, {
-        nickname,
-        reviewCount,
-        reviews,
-      })
-    );
+    const user = await userService.getUserInfo(userId);
+    if (!user) return res.status(sc.NO_USER).send(fail(sc.NO_USER, rm.NO_USER));
+
+    try {
+      const nickname = user.nickname;
+      const reviews = await reviewService.getReviews(userId);
+      if (reviews == null) {
+        return res
+          .status(sc.NO_CONTENT)
+          .send(fail(sc.NO_CONTENT, rm.NO_CONTENT));
+      }
+      const reviewCount = reviews.length;
+
+      return res.status(sc.OK).send(
+        success(sc.OK, rm.READ_REVIEW_LIST_SUCCESS, {
+          nickname,
+          reviewCount,
+          reviews,
+        })
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+/**
+ *  @route DELETE /reviews/:reviewId
+ *  @desc 리뷰 삭제
+ *  @access Public
+ */
+router.delete("/:reviewId", auth, async (req: Request, res: Response, next) => {
+  const { reviewId } = req.params;
+  const userId = res.locals.userId;
+
+  if (!reviewId || !mongoose.isValidObjectId(reviewId)) {
+    return res.status(sc.NULL_VALUE).send(fail(sc.NULL_VALUE, rm.NULL_VALUE));
+  }
+
+  try {
+    const review = await reviewService.getReviewById(reviewId);
+    if (!review)
+      return res.status(sc.NO_CONTENT).send(fail(sc.NO_CONTENT, rm.NO_CONTENT));
+
+    if (review.user != userId) {
+      return res
+        .status(sc.UNAUTHORIZED)
+        .send(fail(sc.UNAUTHORIZED, rm.UNAUTHORIZED));
+    }
+
+    const location = await reviewService.getReviewById(reviewId);
+    const locationId = location.location;
+    await reviewService.deleteReview(reviewId);
+    await mapService.updateLocationEmojiAfterReviewDeleted(locationId);
+
+    return res.status(sc.OK).send(success(sc.OK, rm.DELETE_REVIEW_SUCCESS));
   } catch (error) {
     next(error);
   }

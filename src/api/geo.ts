@@ -19,7 +19,7 @@ router.get("/address", auth, async (req: Request, res: Response, next) => {
 
   try {
     if (!address)
-      return res.status(sc.NO_CONTENT).send(fail(sc.NO_CONTENT, rm.NO_CONTENT));
+      return res.status(sc.NULL_VALUE).send(fail(sc.NULL_VALUE, rm.NULL_VALUE));
 
     const coord = await geoService.requestGeocoding(address);
 

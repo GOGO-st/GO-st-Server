@@ -3,7 +3,6 @@ import Location from "../models/Location";
 import { IReviewOutputDTO, IReviewMyOutputDTO } from "../interfaces/IReview";
 import createError from "http-errors";
 
-const mapService = require("../services/mapService");
 const rm = require("../modules/responseMessage");
 const date = require("../modules/date");
 
@@ -42,6 +41,15 @@ const getLocationReviewList = async locationId => {
 };
 
 /**
+ * @리뷰_조회_By_ID
+ */
+const getReviewById = async reviewId => {
+  const review = await Review.findById(reviewId);
+  if (!review) return null;
+  return review;
+};
+
+/**
  * @리뷰
  */
 const review = async (userId, locationId, title, content, emoji, category) => {
@@ -52,7 +60,7 @@ const review = async (userId, locationId, title, content, emoji, category) => {
       title: title,
       content: content,
       emoji: emoji,
-      category: [category],
+      category: category,
       created_at: date.getDate(),
     });
 
@@ -82,14 +90,17 @@ const createReview = async (
     const isReviewed = await checkReviewed(x, y);
 
     if (isReviewed == false) {
-      const location = await mapService.saveCoord(
-        x,
-        y,
-        locationName,
-        locationAddress,
-        [category],
-        emoji
-      );
+      console.log("Checked isReviewed");
+      const location = new Location({
+        x: x,
+        y: y,
+        locationName: locationName,
+        locationAddress: locationAddress,
+        category: category,
+        emoji: emoji,
+      });
+
+      await location.save();
       return await review(userId, location._id, title, content, emoji, [
         category,
       ]);
@@ -119,14 +130,17 @@ const getReviews = async userId => {
   var myReviewsDTO: IReviewMyOutputDTO[] = [];
 
   for (let review of myReviews) {
+    let location = await Location.findById(review.location);
+
     let myReview: IReviewMyOutputDTO = {
       _id: review._id,
-      locationName: review.locationName,
+      locationName: location.locationName,
       title: review.title,
       content: review.content,
       emoji: review.emoji,
       create_at: review.created_at,
     };
+
     myReviewsDTO.push(myReview);
   }
 
@@ -142,9 +156,57 @@ const checkReviewed = async (x, y) => {
   return true;
 };
 
+/**
+ * @이모지_조회
+ */
+const getEmojies = async locationId => {
+  let emojies = [];
+
+  var reviews = await Review.find()
+    .where("location")
+    .equals(locationId)
+    .populate("user", [
+      "_id",
+      "nickname",
+      "created_at",
+      "title",
+      "content",
+      "emoji",
+    ])
+    .sort({ created_at: -1 });
+
+  if (reviews.length > 2) {
+    const reviewsForEmoji = reviews.slice(0, 3);
+    for (let review of reviewsForEmoji) {
+      emojies.push(review.emoji);
+    }
+  } else {
+    for (let review of reviews) {
+      emojies.push(review.emoji);
+    }
+  }
+
+  return emojies;
+};
+
+/**
+ * @리뷰_삭제
+ */
+const deleteReview = async reviewId => {
+  try {
+    await Review.findByIdAndRemove({ _id: reviewId });
+  } catch (error) {
+    throw error;
+  }
+};
+
 module.exports = {
   checkReviewed,
   getLocationReviewList,
   createReview,
   getReviews,
+  getEmojies,
+  review,
+  deleteReview,
+  getReviewById,
 };

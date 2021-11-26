@@ -37,7 +37,7 @@ router.get("/category", auth, async (req: Request, res: Response, next) => {
   const category = req.query.category;
 
   if (!category) {
-    next(createError(sc.BAD_REQUEST, rm.NULL_VALUE));
+    return res.status(sc.NULL_VALUE).send(fail(sc.NULL_VALUE, rm.NULL_VALUE));
   }
 
   try {
@@ -61,26 +61,36 @@ router.get("/category", auth, async (req: Request, res: Response, next) => {
  *  @desc 특정 장소 상세 정보 리턴
  *  @access Public
  */
-router.get("/detail", auth, async (req: Request, res: Response, next) => {
-  const locationId = req.query.locationId;
+router.get(
+  "/detail/:locationId",
+  auth,
+  async (req: Request, res: Response, next) => {
+    const { locationId } = req.params;
+    if (!locationId)
+      return res.status(sc.NULL_VALUE).send(fail(sc.NULL_VALUE, rm.NULL_VALUE));
 
-  try {
-    if (!mongoose.isValidObjectId(locationId)) {
-      return next(createError(sc.BAD_REQUEST, rm.INVALID_IDENTIFIER));
-    } else {
-      const locationDetail = await mapService.getLocationDetailById(locationId);
-      if (!locationDetail)
+    try {
+      if (!mongoose.isValidObjectId(locationId)) {
         return res
-          .status(sc.NO_CONTENT)
-          .send(fail(sc.NO_CONTENT, rm.LOCATE_DETAIL_FAIL));
+          .status(sc.NULL_VALUE)
+          .send(fail(sc.NULL_VALUE, rm.NULL_VALUE));
+      } else {
+        const locationDetail = await mapService.getLocationDetailById(
+          locationId
+        );
+        if (!locationDetail)
+          return res
+            .status(sc.NO_CONTENT)
+            .send(fail(sc.NO_CONTENT, rm.LOCATE_DETAIL_FAIL));
 
-      return res
-        .status(sc.OK)
-        .send(success(sc.OK, rm.LOCATE_DETAIL_SUCCESS, locationDetail));
+        return res
+          .status(sc.OK)
+          .send(success(sc.OK, rm.LOCATE_DETAIL_SUCCESS, locationDetail));
+      }
+    } catch (error) {
+      return next(error);
     }
-  } catch (error) {
-    return next(error);
   }
-});
+);
 
 module.exports = router;

@@ -3,9 +3,6 @@ import jwt from "jsonwebtoken";
 import User from "../models/User";
 import bcrypt from "bcryptjs";
 
-const createError = require("http-errors");
-const sc = require("../modules/statusCode");
-const rm = require("../modules/responseMessage");
 const date = require("../modules/date");
 const getSchool = require("../modules/getSchool");
 const generateNickname = require("../modules/nicknameGenerate");
@@ -15,21 +12,10 @@ const nodemailer = require("nodemailer");
 /**
  * @로그인
  */
-const loginUser = async (email, password) => {
-  let user = await User.findOne({ email });
-  console.log(user);
-
-  // 없는 유저
-  if (!user) {
-    throw createError(sc.NOT_FOUND, rm.NO_EMAIL);
-  }
-
-  // 비밀번호 불일치
+const loginUser = async (user, password) => {
   const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) {
-    throw createError(sc.BAD_REQUEST, rm.MISS_MATCH_PW);
-  }
 
+  if (!isMatch) return null;
   return user;
 };
 
@@ -48,11 +34,6 @@ const generateToken = async userId => {
  * @회원_가입
  */
 const signupUser = async (email, password) => {
-  const isUsedEmail = await User.findOne({ email });
-  if (isUsedEmail != null) {
-    throw createError(sc.BAD_REQUEST, rm.ALREADY_EMAIL);
-  }
-
   const nickname = generateNickname(nickNameSet);
   const school = await getSchool(email);
 
@@ -77,11 +58,6 @@ const signupUser = async (email, password) => {
  * @이메일_인증
  */
 const mailToUser = async email => {
-  const user = await User.findOne({ email: email });
-  if (user) {
-    throw createError(sc.BAD_REQUEST, rm.ALREADY_EMAIL);
-  }
-
   let transporter = nodemailer.createTransport({
     service: "gmail",
     host: "smtp.gmail.com",
@@ -113,10 +89,30 @@ const getUserInfo = async userId => {
   return user[0];
 };
 
+/**
+ * @유저_정보_조회_By_Email
+ */
+const getUserByEmail = async email => {
+  const user = await User.findOne({ email: email });
+
+  if (!user) null;
+  return user;
+};
+
+/**
+ * @유저_탈퇴
+ */
+const deleteUser = async userId => {
+  const deletedUser = await User.findOneAndRemove({ userId });
+  return deletedUser;
+};
+
 module.exports = {
   loginUser,
   signupUser,
   generateToken,
   mailToUser,
   getUserInfo,
+  getUserByEmail,
+  deleteUser,
 };
