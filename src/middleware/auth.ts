@@ -3,12 +3,13 @@ import config from "../config";
 import createError from "http-errors";
 const rm = require("../modules/responseMessage");
 const sc = require("../modules/statusCode");
+const { success, fail } = require("../modules/util");
 
 export default (req, res, next) => {
   const token = req.header("token");
 
   if (!token) {
-    next(createError(sc.BAD_REQUEST, rm.NO_TOKEN));
+    return res.status(sc.UNAUTHORIZED).send(fail(sc.UNAUTHORIZED, rm.NO_TOKEN));
   }
 
   try {
@@ -18,6 +19,8 @@ export default (req, res, next) => {
     res.locals.userId = decoded.sub;
     next();
   } catch (err) {
-    next(createError(sc.UNAUTHORIZED, rm.EXPIRED_TOKEN));
+    return res
+      .status(sc.UNAUTHORIZED)
+      .send(fail(sc.UNAUTHORIZED, rm.EXPIRED_TOKEN));
   }
 };
