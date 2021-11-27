@@ -1,4 +1,3 @@
-import createError from "http-errors";
 import express, { Request, Response } from "express";
 import { check, validationResult } from "express-validator";
 import auth from "../middleware/auth";
@@ -122,7 +121,7 @@ router.post(
           .status(sc.ALREADY_USER)
           .send(fail(sc.ALREADY_USER, rm.ALREADY_EMAIL));
 
-      const authNum = await userService.mailToUser(user.email);
+      const authNum = await userService.mailToUser(email);
 
       return res
         .status(sc.OK)
@@ -137,7 +136,6 @@ router.post(
  *  @route GET users/
  *  @desc 마이페이지 ( 닉네임, 리뷰 목록 )
  */
-// TODO. 마이페이지 작성하기
 router.get("/", auth, async (req: Request, res: Response, next) => {
   const userId = res.locals.userId;
 

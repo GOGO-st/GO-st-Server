@@ -1,4 +1,3 @@
-import createError from "http-errors";
 import express, { Request, Response } from "express";
 import mongoose from "mongoose";
 import auth from "../middleware/auth";
@@ -12,7 +11,6 @@ const { success, fail } = require("../modules/util");
 /**
  *  @route GET maps/
  *  @desc 모든 장소를 리턴
- *  @access Public
  */
 router.get("/", auth, async (req: Request, res: Response, next) => {
   try {
@@ -29,11 +27,10 @@ router.get("/", auth, async (req: Request, res: Response, next) => {
 });
 
 /**
- *  @route GET maps/category
+ *  @route GET /maps?category={}
  *  @desc 카테고리 필터링 장소 리턴
- *  @access Public
  */
-router.get("/category", auth, async (req: Request, res: Response, next) => {
+router.get("/", auth, async (req: Request, res: Response, next) => {
   const category = req.query.category;
 
   if (!category) {
@@ -57,40 +54,31 @@ router.get("/category", auth, async (req: Request, res: Response, next) => {
 });
 
 /**
- *  @route GET maps/detail/:locationId
+ *  @route GET /maps/:locationId
  *  @desc 특정 장소 상세 정보 리턴
- *  @access Public
  */
-router.get(
-  "/detail/:locationId",
-  auth,
-  async (req: Request, res: Response, next) => {
-    const { locationId } = req.params;
-    if (!locationId)
+router.get("/:locationId", auth, async (req: Request, res: Response, next) => {
+  const { locationId } = req.params;
+  if (!locationId)
+    return res.status(sc.NULL_VALUE).send(fail(sc.NULL_VALUE, rm.NULL_VALUE));
+
+  try {
+    if (!mongoose.isValidObjectId(locationId)) {
       return res.status(sc.NULL_VALUE).send(fail(sc.NULL_VALUE, rm.NULL_VALUE));
-
-    try {
-      if (!mongoose.isValidObjectId(locationId)) {
+    } else {
+      const locationDetail = await mapService.getLocationDetailById(locationId);
+      if (!locationDetail)
         return res
-          .status(sc.NULL_VALUE)
-          .send(fail(sc.NULL_VALUE, rm.NULL_VALUE));
-      } else {
-        const locationDetail = await mapService.getLocationDetailById(
-          locationId
-        );
-        if (!locationDetail)
-          return res
-            .status(sc.NO_CONTENT)
-            .send(fail(sc.NO_CONTENT, rm.LOCATE_DETAIL_FAIL));
+          .status(sc.NO_CONTENT)
+          .send(fail(sc.NO_CONTENT, rm.LOCATE_DETAIL_FAIL));
 
-        return res
-          .status(sc.OK)
-          .send(success(sc.OK, rm.LOCATE_DETAIL_SUCCESS, locationDetail));
-      }
-    } catch (error) {
-      return next(error);
+      return res
+        .status(sc.OK)
+        .send(success(sc.OK, rm.LOCATE_DETAIL_SUCCESS, locationDetail));
     }
+  } catch (error) {
+    return next(error);
   }
-);
+});
 
 module.exports = router;

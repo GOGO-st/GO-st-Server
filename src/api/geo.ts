@@ -10,9 +10,8 @@ const searchService = require("../services/searchService");
 const { success, fail } = require("../modules/util");
 
 /**
- * @route GET geo/address
+ * @route GET geo/address?address={}
  * @desc 주소를 좌표로 변환합니다.
- * @access Public
  */
 router.get("/address", auth, async (req: Request, res: Response, next) => {
   const address = req.query.address;
@@ -34,9 +33,8 @@ router.get("/address", auth, async (req: Request, res: Response, next) => {
 });
 
 /**
- *  @route GET geo/coord
+ *  @route GET geo/coord?x={}?y={}
  *  @desc 좌표를 주소로 변환합니다.
- *  @access Public
  */
 router.get("/coord", auth, async (req: Request, res: Response, next) => {
   const { x, y } = req.query;
@@ -57,7 +55,8 @@ router.get("/coord", auth, async (req: Request, res: Response, next) => {
 });
 
 /**
- * @route GET geo/search
+ * @route GET geo/search?keyword={}
+ * @desc 장소를 검색합니다.
  */
 router.get("/search", auth, async (req: Request, res: Response, next) => {
   const keyword = req.query.keyword;

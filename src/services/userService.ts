@@ -72,10 +72,22 @@ const mailToUser = async email => {
   const verifyCode = Math.floor(Math.random() * (999999 - 100000)) + 100000;
 
   await transporter.sendMail({
-    from: `"Test" <${process.env.NODEMAILER_USER}>`,
+    from: `"GO.st" <${process.env.NODEMAILER_USER}>`,
     to: email,
-    subject: "Test 비밀번호 인증 메일입니다.",
-    html: `<h3>앱으로 돌아가서 해당 인증코드를 입력해주세요 :)</h3><p> 인증코드는 <b>${verifyCode}</b> 입니다.</p>`,
+    subject: "[GO.st] 인증 번호를 확인해주세요.",
+    html: `
+    <h3>안녕하세요, GO.st에서 인증용 번호가 도착했어요!</h3> 
+
+    <p>이메일 인증을 완료해주세요. </p>
+
+    <p>인증번호는 <b>${verifyCode}</b> 입니다.</p>
+
+    <p>인증번호를 이메일 인증 화면에 입력해주세요.</p>
+
+    <p>인증번호를 입력했는데도 계속 다음 화면으로 넘어가지 않는다면, 그래도 문제가 있다면 we.are.all.gost@gmail.com로 말씀해주세요.☺️</p>
+
+    <p>본 메일은 발신 전용 메일로서 회신 되지 않습니다.</p>
+    `,
   });
 
   return verifyCode;

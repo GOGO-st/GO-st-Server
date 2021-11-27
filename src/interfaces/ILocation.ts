@@ -1,4 +1,3 @@
-import mongoose from "mongoose";
 import { IReviewOutputDTO } from "./IReview";
 
 export interface ILocation {

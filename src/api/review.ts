@@ -14,7 +14,6 @@ const { success, fail } = require("../modules/util");
 /**
  *  @route GET reviews/
  *  @desc 내가 작성한 리뷰 목록 리턴
- *  @access Public
  */
 router.get("/", auth, async (req: Request, res: Response, next) => {
   const userId = res.locals.userId;
@@ -37,7 +36,6 @@ router.get("/", auth, async (req: Request, res: Response, next) => {
 /**
  *  @route GET reviews/:locationId
  *  @desc 특정 장소에 대한 리뷰 리턴
- *  @access Public
  */
 router.get("/:locationId", auth, async (req: Request, res: Response, next) => {
   const { locationId } = req.params;
@@ -63,7 +61,6 @@ router.get("/:locationId", auth, async (req: Request, res: Response, next) => {
 /**
  *  @route POST reviews/
  *  @desc 새로운 리뷰 작성
- *  @access Public
  */
 router.post("/", auth, async (req: Request, res: Response, next) => {
   if (!req.body) return next(createError(401, rm.NULL_VALUE));
@@ -109,9 +106,8 @@ router.post("/", auth, async (req: Request, res: Response, next) => {
 });
 
 /**
- *  @route GET reviews/other/
+ *  @route GET reviews/other/:userId
  *  @desc 다른 유저의 리뷰 목록 리턴
- *  @access Public
  */
 router.get(
   "/other/:userId",
@@ -150,7 +146,6 @@ router.get(
 /**
  *  @route DELETE /reviews/:reviewId
  *  @desc 리뷰 삭제
- *  @access Public
  */
 router.delete("/:reviewId", auth, async (req: Request, res: Response, next) => {
   const { reviewId } = req.params;
