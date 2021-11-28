@@ -36,7 +36,7 @@
 
 ### <strong>✏️ API Docs ✏️</strong>
 
-[GO.st API Docs →](https://www.notion.so/storypanda/API-Docs-32e1d19f0b55421d9cf81b78f36981c4)
+[GO.st API Docs →](https://cherryontop.notion.site/GO-st-API-Docs-d58cfaa4aa004ba38f6c643fdcfd54ad)
 
 <br>
 
